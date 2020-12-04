@@ -23,7 +23,7 @@ class HomePage extends React.Component {
     // });
 
     axios.get("http://localhost:5005").then((responseBack) => {
-      console.log("responseBack:", responseBack);
+      // console.log("responseBack:", responseBack);
       this.setState({ questions: responseBack.data });
     });
   };
@@ -107,8 +107,13 @@ class HomePage extends React.Component {
             <button type="submit">Submit this question</button>
           </form>
         </div>
-        {filteredQuestions.map((el) => (
-          <Question deleteQuestion={this.deleteQuestion} key={el.id} {...el} />
+        {filteredQuestions.map((el, i) => (
+          <Question
+            id={i}
+            deleteQuestion={this.deleteQuestion}
+            key={el.id}
+            {...el}
+          />
         ))}
       </>
     );
