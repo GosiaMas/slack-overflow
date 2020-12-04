@@ -3,6 +3,7 @@ import React from "react";
 import questions from "./questions.json";
 import Question from "./components/Question";
 import { addNewQuestion, getAllQuestions } from "./services/questions";
+import axios from "axios";
 
 // goals for now: add a new question with the right data
 // filter in real time by either author or content
@@ -19,8 +20,13 @@ class App extends React.Component {
   };
 
   componentDidMount = () => {
-    getAllQuestions().then((questions) => {
-      this.setState({ questions });
+    // getAllQuestions().then((questions) => {
+    //   this.setState({ questions });
+    // });
+
+    axios.get("http://localhost:5005").then((responseBack) => {
+      console.log("responseBack:", responseBack);
+      this.setState({ questions: responseBack.data });
     });
   };
 
