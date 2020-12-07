@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Question = (props) => {
-  console.log("props:", props);
   return (
     <Link to={`/question/${props.id}`}>
       <div

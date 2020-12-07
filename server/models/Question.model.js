@@ -3,8 +3,11 @@ const { Schema, model } = require("mongoose");
 const questionSchema = new Schema({
   question: String,
   tags: [String],
-  // author
   topic: String,
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 const Question = model("Question", questionSchema);

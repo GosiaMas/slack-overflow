@@ -13,21 +13,42 @@ const User = require("../models/User.model");
 // Require necessary middlewares in order to control access to specific routes
 const shouldNotBeLoggedIn = require("../middlewares/shouldNotBeLoggedIn");
 const isLoggedIn = require("../middlewares/isLoggedIn");
+const Session = require("../models/Session.model");
 
-router.get("/signup", shouldNotBeLoggedIn, (req, res) => {
-  res.render("auth/signup");
+router.get("/loggedin", (req, res) => {
+  console.log(req.headers);
+  if (!req.headers.authorization || req.headers.authorization === "null") {
+    return res.json({ user: null });
+  }
+  Session.findById(req.headers.authorization)
+    .populate("user")
+    .then((sessionInfo) => {
+      res.json(sessionInfo);
+    });
 });
 
-router.post("/signup", shouldNotBeLoggedIn, (req, res) => {
+router.delete("/logout", (req, res) => {
+  if (!req.headers.authorization || req.headers.authorization === "null") {
+    return res.json({ errorMessage: "No id" });
+  }
+
+  Session.findByIdAndDelete(req.headers.authorization).then(() => {
+    res.json({ status: true });
+  });
+});
+
+router.post("/signup", (req, res) => {
   const { username, password } = req.body;
 
   if (!username) {
-    return res.status(400).render("signup", { errorMessage: "Please provide your username." });
+    return res
+      .status(400) // Bad Request
+      .json({ errorMessage: "Please provide your username." });
   }
 
   if (password.length < 8) {
-    return res.status(400).render("signup", {
-      errorMessage: "Your password needs to be at least 8 characters long."
+    return res.status(400).json({
+      errorMessage: "Your password needs to be at least 8 characters long.",
     });
   }
 
@@ -46,9 +67,9 @@ router.post("/signup", shouldNotBeLoggedIn, (req, res) => {
   // Search the database for a user with the username submitted in the form
   User.findOne({ username }).then((found) => {
     // If the user is found, send the message username is taken
-    if (found) {
-      return res.status(400).render("signup", { errorMessage: "Username already taken." });
-    }
+    // if (found) {
+    //   return res.status(400).json({ errorMessage: "Username already taken." });
+    // }
 
     // if user is not found, create a new user - start with hashing the password
     return bcrypt
@@ -58,44 +79,49 @@ router.post("/signup", shouldNotBeLoggedIn, (req, res) => {
         // Create a user and save it in the database
         return User.create({
           username,
-          password: hashedPassword
+          password: hashedPassword,
         });
       })
       .then((user) => {
         // Bind the user to the session object
-        req.session.user = user;
-        res.redirect("/");
+        // slack-overflow.herokuapp.com -> server
+        // slack-overflow.netlify.app -> client
+        // req.session.user = user; 🔺
+        Session.create({
+          user: user._id,
+        }).then((newSession) => {
+          res.json({ accessToken: newSession._id, user });
+        });
       })
       .catch((error) => {
         if (error instanceof mongoose.Error.ValidationError) {
-          return res.status(400).render("signup", { errorMessage: error.message });
+          return res.status(400).json({ errorMessage: error.message });
         }
         if (error.code === 11000) {
-          return res.status(400).render("signup", {
-            errorMessage: "Username need to be unique. The username you chose is already in use."
+          return res.status(400).json({
+            errorMessage:
+              "Username need to be unique. The username you chose is already in use.",
           });
         }
-        return res.status(500).render("signup", { errorMessage: error.message });
+        return res.status(500).render({ errorMessage: error.message });
       });
   });
 });
 
-router.get("/login", shouldNotBeLoggedIn, (req, res) => {
-  res.render("auth/login");
-});
-
-router.post("/login", shouldNotBeLoggedIn, (req, res, next) => {
+router.post("/login", (req, res, next) => {
   const { username, password } = req.body;
 
   if (!username) {
-    return res.status(400).render("login", { errorMessage: "Please provide your username." });
+    return res
+      .status(400)
+      .json({ errorMessage: "Please provide your username." });
   }
 
   // Here we use the same logic as above
   // - either length based parameters or we check the strength of a password
   if (password.length < 8) {
-    return res.status(400).render("login", {
-      errorMessage: "Your password needs to be at least 8 characters long."
+    return res.status(400).json({
+      errorMessage: "Your password needs to be at least 8 characters long.",
     });
   }
 
@@ -104,17 +130,19 @@ router.post("/login", shouldNotBeLoggedIn, (req, res, next) => {
     .then((user) => {
       // If the user isn't found, send the message that user provided wrong credentials
       if (!user) {
-        return res.status(400).render("login", { errorMessage: "Wrong credentials." });
+        return res.status(400).json({ errorMessage: "Wrong credentials." });
       }
 
       // If user is found based on the username, check if the in putted password matches the one saved in the database
       bcrypt.compare(password, user.password).then((isSamePassword) => {
         if (!isSamePassword) {
-          return res.status(400).render("login", { errorMessage: "Wrong credentials." });
+          return res.status(400).json({ errorMessage: "Wrong credentials." });
         }
-        req.session.user = user;
-        // req.session.user = user._id; // ! better and safer but in this case we saving the entire user object
-        return res.redirect("/");
+        Session.create({
+          user: user._id,
+        }).then((newSession) => {
+          res.json({ accessToken: newSession._id, user });
+        });
       });
     })
 
@@ -129,7 +157,9 @@ router.post("/login", shouldNotBeLoggedIn, (req, res, next) => {
 router.get("/logout", isLoggedIn, (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      return res.status(500).render("auth/logout", { errorMessage: err.message });
+      return res
+        .status(500)
+        .render("auth/logout", { errorMessage: err.message });
     }
     res.redirect("/");
   });

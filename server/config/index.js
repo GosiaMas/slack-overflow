@@ -13,14 +13,6 @@ const cookieParser = require("cookie-parser");
 // https://www.npmjs.com/package/path
 const path = require("path");
 
-// ℹ️ Session middleware for authentication
-// https://www.npmjs.com/package/express-session
-const session = require("express-session");
-
-// ℹ️ MongoStore in order to save the user session in the database
-// https://www.npmjs.com/package/connect-mongodb-session
-const MongoStore = require("connect-mongodb-session")(session);
-
 const cors = require("cors");
 // Middleware configuration
 module.exports = (app) => {
@@ -37,17 +29,4 @@ module.exports = (app) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
-
-  // ℹ️ Middleware that adds a "req.session" information and later to check that you are who you say you are 😅
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || "super hyper secret key",
-      resave: false,
-      saveUninitialized: false,
-      store: new MongoStore({
-        uri: process.env.MONGODB_URI || "mongodb://localhost/name",
-        collection: "sessions",
-      }),
-    })
-  );
 };
