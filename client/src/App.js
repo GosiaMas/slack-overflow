@@ -92,7 +92,7 @@ class App extends React.Component {
           {/* {this.state.user && (
             <Route exact path="/protected" component={ProtectedPage} />
           )} */}
-          {this.state.user ? (
+          {/* {this.state.user ? (
             <Route
               exact
               path="/protected"
@@ -106,7 +106,7 @@ class App extends React.Component {
             />
           ) : (
             <Route component={LogIn} />
-          )}
+          )} */}
 
           <ProtectedRoutes
             exact
