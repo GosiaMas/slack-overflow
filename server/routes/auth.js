@@ -23,6 +23,9 @@ router.get("/loggedin", (req, res) => {
   Session.findById(req.headers.authorization)
     .populate("user")
     .then((sessionInfo) => {
+      if (!sessionInfo) {
+        return res.json({ user: null });
+      }
       res.json(sessionInfo); // {_id: asldfasdfsaf, user: {}}
     });
 });

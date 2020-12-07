@@ -43,21 +43,6 @@ class HomePage extends React.Component {
     });
   };
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    const question = {
-      question: this.state.question,
-      author: this.state.author,
-      topic: this.state.topic,
-      tags: this.state.tags,
-    };
-    addNewQuestion(question).then((res) => {
-      this.setState({
-        questions: [res, ...this.state.questions],
-      });
-    });
-  };
-
   render() {
     const filteredQuestions = this.state.questions.filter((el) => {
       return (
@@ -75,37 +60,6 @@ class HomePage extends React.Component {
             value={this.state.search}
             onChange={this.handleChange}
           />
-          <form onSubmit={this.handleSubmit}>
-            <input
-              type="text"
-              name="question"
-              value={this.state.question}
-              onChange={this.handleChange}
-              placeholder="Type your question here"
-            />
-            <input
-              type="text"
-              name="tags"
-              value={this.state.tags}
-              onChange={this.handleChange}
-              placeholder="Type your Tags"
-            />
-            <input
-              type="text"
-              name="author"
-              onChange={this.handleChange}
-              value={this.state.author}
-              placeholder="Type your name here"
-            />
-            <input
-              type="text"
-              name="topic"
-              value={this.state.topic}
-              onChange={this.handleChange}
-              placeholder="Type your topic here"
-            />
-            <button type="submit">Submit this question</button>
-          </form>
         </div>
         {filteredQuestions.map((el, i) => (
           <Question

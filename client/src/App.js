@@ -14,6 +14,7 @@ import ProtectedPage from "./pages/ProtectedPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoutes from "./fakecomponents/ProtectedRoutes";
 import NormalRoute from "./fakecomponents/NormalRoutes";
+import NewQuestion from "./pages/NewQuestion";
 
 class App extends React.Component {
   state = {
@@ -111,10 +112,17 @@ class App extends React.Component {
           <ProtectedRoutes
             exact
             path="/protected"
+            component={NewQuestion}
+            user={this.state.user}
+          />
+
+          {/* <ProtectedRoutes
+            exact
+            path="/protected"
             component={ProtectedPage}
             user={this.state.user}
             authenticate={this.authenticate}
-          />
+          /> */}
 
           {/* <ProtectedRoutes
             exact
