@@ -23,7 +23,7 @@ router.get("/loggedin", (req, res) => {
   Session.findById(req.headers.authorization)
     .populate("user")
     .then((sessionInfo) => {
-      res.json(sessionInfo);
+      res.json(sessionInfo); // {_id: asldfasdfsaf, user: {}}
     });
 });
 
@@ -90,7 +90,10 @@ router.post("/signup", (req, res) => {
         Session.create({
           user: user._id,
         }).then((newSession) => {
-          res.json({ accessToken: newSession._id, user });
+          res.json({
+            accessToken: newSession._id,
+            user,
+          });
         });
       })
       .catch((error) => {

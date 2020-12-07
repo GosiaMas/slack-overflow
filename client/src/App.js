@@ -13,6 +13,7 @@ import LogIn from "./pages/LoginPage";
 import ProtectedPage from "./pages/ProtectedPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoutes from "./fakecomponents/ProtectedRoutes";
+import NormalRoute from "./fakecomponents/NormalRoutes";
 
 class App extends React.Component {
   state = {
@@ -73,12 +74,19 @@ class App extends React.Component {
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route exact path="/question/:id" component={SingleQuestionPage} />
-          <Route
+          {/* <Route
             exact
             path="/signup"
             render={(routerProps) => (
               <Signup {...routerProps} authenticate={this.authenticate} />
             )}
+          /> */}
+
+          <NormalRoute
+            exact
+            path="/signup"
+            component={Signup}
+            authenticate={this.authenticate}
           />
 
           {/* {this.state.user && (
@@ -101,12 +109,26 @@ class App extends React.Component {
           )}
 
           <ProtectedRoutes
-            component={ProtectedPage}
-            user={this.state.user}
             exact
             path="/protected"
+            component={ProtectedPage}
+            user={this.state.user}
             authenticate={this.authenticate}
           />
+
+          {/* <ProtectedRoutes
+            exact
+            path="/admin"
+            component={AdminComponent}
+            user={this.state.user}
+          />
+
+          <ProtectedRoutes
+            exact
+            path="/profile"
+            component={ProfilePage}
+            user={this.state.user}
+          /> */}
 
           <Route
             exact

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
 
+// button.addEventListener("click")
+
 export default class Signup extends Component {
   state = {
     username: "",
@@ -28,6 +30,9 @@ export default class Signup extends Component {
         localStorage.setItem("accessToken", response.data.accessToken);
         this.props.authenticate(response.data.user);
         this.props.history.push("/");
+      })
+      .catch((err) => {
+        console.log("err:", err);
       });
   };
 
