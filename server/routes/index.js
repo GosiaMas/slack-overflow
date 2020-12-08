@@ -1,26 +1,11 @@
 const router = require("express").Router();
 const questions = require("../questions.json");
+const Session = require("../models/Session.model");
+const Question = require("../models/Question.model");
+const isLoggedIn = require("../middlewares/isLoggedIn");
 
-/* GET home page */
-router.get("/", (req, res, next) => {
-  res.json(questions);
-  // Questions.find({}).then(allQuestions=>{
-
-  //   res.json(allQuestions);
-  // })
-});
-
-router.post("/new-question", (req, res) => {
-  // missing some user validation
-  console.log(req.body);
-  res.json(true);
-});
-
-router.get("/question/:id", (req, res) => {
-  const id = Number(req.params.id);
-  console.log("req.params.id:", req.params.id, typeof req.params.id);
-
-  res.json(questions[id]);
+router.get("/", (req, res) => {
+  res.json("Hello world");
 });
 
 module.exports = router;

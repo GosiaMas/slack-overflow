@@ -23,6 +23,10 @@ class NewQuestion extends React.Component {
     };
     addNewQuestion(question).then((res) => {
       console.log("res:", res);
+      if (!res.status) {
+        // deal with the error
+        return;
+      }
     });
   };
 

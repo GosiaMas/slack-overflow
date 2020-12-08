@@ -1,20 +1,17 @@
-import logo from "./logo.svg";
-import React from "react";
-import questions from "./questions.json";
-import Question from "./components/Question";
-import { addNewQuestion, getAllQuestions } from "./services/questions";
 import axios from "axios";
+import React from "react";
 import { Route, Switch } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import SingleQuestionPage from "./pages/SingleQuestionPage";
 import Navbar from "./components/Navbar";
-import Signup from "./pages/Singup";
-import LogIn from "./pages/LoginPage";
-import ProtectedPage from "./pages/ProtectedPage";
-import NotFound from "./pages/NotFound";
-import ProtectedRoutes from "./fakecomponents/ProtectedRoutes";
 import NormalRoute from "./fakecomponents/NormalRoutes";
+import ProtectedRoutes from "./fakecomponents/ProtectedRoutes";
+import EditPage from "./pages/EditPage";
+import HomePage from "./pages/HomePage";
+import LogIn from "./pages/LoginPage";
 import NewQuestion from "./pages/NewQuestion";
+import NotFound from "./pages/NotFound";
+import SingleQuestionPage from "./pages/SingleQuestionPage";
+import Signup from "./pages/Singup";
+import { logout } from "./services/authService";
 
 class App extends React.Component {
   state = {
@@ -28,19 +25,12 @@ class App extends React.Component {
 
   logout = () => {
     const accessToken = localStorage.getItem("accessToken"); // 43562390567435986743 || null
-    axios
-      .delete("http://localhost:5005/auth/logout", {
-        headers: {
-          Authorization: accessToken,
-        },
-      })
+    logout()
       .then((response) => {
-        console.log("response:", response);
         localStorage.removeItem("accessToken");
         this.authenticate(null);
       })
       .catch((err) => {
-        console.log("err:", err);
         localStorage.removeItem("accessToken");
         this.authenticate(null);
       });
@@ -73,8 +63,19 @@ class App extends React.Component {
         <Navbar logout={this.logout} user={this.state.user} />
         <h3 style={{ textAlign: "center" }}>Slack overflow</h3>
         <Switch>
-          <Route exact path="/" component={HomePage} />
+          <NormalRoute
+            exact
+            path="/"
+            component={HomePage}
+            user={this.state.user}
+          />
           <Route exact path="/question/:id" component={SingleQuestionPage} />
+          <ProtectedRoutes
+            exact
+            path="/edit/:id"
+            component={EditPage}
+            user={this.state.user}
+          />
           {/* <Route
             exact
             path="/signup"

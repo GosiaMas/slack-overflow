@@ -16,7 +16,6 @@ const isLoggedIn = require("../middlewares/isLoggedIn");
 const Session = require("../models/Session.model");
 
 router.get("/loggedin", (req, res) => {
-  console.log(req.headers);
   if (!req.headers.authorization || req.headers.authorization === "null") {
     return res.json({ user: null });
   }

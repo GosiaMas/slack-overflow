@@ -22,9 +22,9 @@ class HomePage extends React.Component {
     //   this.setState({ questions });
     // });
 
-    axios.get("http://localhost:5005").then((responseBack) => {
+    getAllQuestions().then((responseBack) => {
       // console.log("responseBack:", responseBack);
-      this.setState({ questions: responseBack.data });
+      this.setState({ questions: responseBack });
     });
   };
 
@@ -53,19 +53,12 @@ class HomePage extends React.Component {
 
     return (
       <>
-        <div>
-          <input
-            style={{ width: "100%" }}
-            name="search"
-            value={this.state.search}
-            onChange={this.handleChange}
-          />
-        </div>
+        <div></div>
         {filteredQuestions.map((el, i) => (
           <Question
-            id={i}
+            user={this.props.user}
             deleteQuestion={this.deleteQuestion}
-            key={el.id}
+            key={el._id}
             {...el}
           />
         ))}

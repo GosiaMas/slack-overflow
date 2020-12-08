@@ -1,8 +1,20 @@
+const Session = require("../models/Session.model");
+
 module.exports = (req, res, next) => {
-  // checks if the user is logged in when trying to access a specific page
-  if (!req.session.user) {
-    return res.redirect('/login');
+  if (!req.headers.authorization || req.headers.authorization === "null") {
+    return res.status(400).json({ errorMessage: "You are not authenticated" });
   }
-  req.user = req.session.user;
-  next();
+
+  Session.findById(req.headers.authorization)
+    .populate("user")
+    .then((sessionInfo) => {
+      if (!sessionInfo) {
+        return res
+          .status(400)
+          .json({ errorMessage: "You are not authenticated" });
+      }
+
+      req.user = sessionInfo.user;
+      next();
+    });
 };

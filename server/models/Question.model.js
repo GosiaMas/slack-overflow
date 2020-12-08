@@ -2,7 +2,7 @@ const { Schema, model } = require("mongoose");
 
 const questionSchema = new Schema({
   question: String,
-  tags: [String],
+  tags: String,
   topic: String,
   author: {
     type: Schema.Types.ObjectId,

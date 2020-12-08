@@ -1,29 +1,62 @@
-import { v4 } from "uuid";
-import questionsList from "../questions.json";
 import axios from "axios";
 
-export function addNewQuestion(question) {
-  return axios
-    .post("http://localhost:5005/new-question", question)
-    .then((response) => response);
+const questionService = axios.create({
+  baseURL: "http://localhost:5005/question",
+});
 
-  // return new Promise((res) => {
-  //   res({
-  //     id: v4(),
-  //     ...info,
-  //   });
-  // });
+export function addNewQuestion(question) {
+  // const accessToken = localStorage.getItem("accessToken")
+  return questionService
+    .post("/new", question, {
+      headers: {
+        Authorization: localStorage.getItem("accessToken"),
+      },
+    })
+    .then((response) => {
+      return {
+        status: true,
+        data: response.data,
+      };
+    })
+    .catch((err) => {
+      console.log("INSINDE THE CATCH");
+      console.log(err.response);
+      return {
+        status: false,
+        errorMessage: err.response.data.errorMessage,
+      };
+    });
+}
+
+export function getSingleQuestion(id) {
+  return questionService.get(`/${id}`).then((res) => {
+    return res.data;
+  });
+}
+
+export function updateSingleQuestion(id, info) {
+  return questionService
+    .put(`/${id}`, info, {
+      headers: {
+        Authorization: localStorage.getItem("accessToken"),
+      },
+    })
+    .then((response) => {
+      return {
+        status: true,
+        data: response.data,
+      };
+    })
+    .catch((err) => {
+      console.log("INSINDE THE CATCH");
+      console.log(err.response);
+      return {
+        status: false,
+        errorMessage: err.response.data.errorMessage,
+      };
+    });
 }
 
 export function getAllQuestions() {
-  return new Promise((res) => {
-    res(
-      questionsList.map((el) => {
-        return {
-          ...el,
-          id: v4(),
-        };
-      })
-    );
-  });
+  return questionService.get("/").then((res) => res.data);
 }
