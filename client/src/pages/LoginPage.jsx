@@ -1,7 +1,37 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import axios from "axios";
+import { useAuth } from "../hooks/useAuth";
 
-export default class LogIn extends Component {
+function Login(props) {
+  // we need to set some state
+
+  const { form, handleSubmit, handleChange } = useAuth("login", props);
+  console.log("FORM VALUES CHANGING", form);
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Login</h2>
+      <label htmlFor="username">Username</label>
+      <input
+        type="text"
+        name="username"
+        id="username"
+        value={form.username}
+        onChange={handleChange}
+      />
+      <label htmlFor="password">Password</label>
+      <input
+        type="password"
+        name="password"
+        id="password"
+        value={form.password}
+        onChange={handleChange}
+      />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+class LogIn2 extends Component {
   state = {
     username: "",
     password: "",
@@ -54,3 +84,5 @@ export default class LogIn extends Component {
     );
   }
 }
+
+export default Login;

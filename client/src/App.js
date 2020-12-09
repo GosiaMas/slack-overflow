@@ -1,6 +1,6 @@
 import axios from "axios";
-import React from "react";
-import { Route, Switch } from "react-router-dom";
+import React, { createContext, useContext } from "react";
+import { Link, Route, Switch } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import NormalRoute from "./fakecomponents/NormalRoutes";
 import ProtectedRoutes from "./fakecomponents/ProtectedRoutes";
@@ -61,7 +61,10 @@ class App extends React.Component {
     return (
       <div style={{ margin: "0 auto", maxWidth: "768px" }} className="App">
         <Navbar logout={this.logout} user={this.state.user} />
-        <h3 style={{ textAlign: "center" }}>Slack overflow</h3>
+        <h3 style={{ textAlign: "center" }}>
+          <Link to="/">Slack overflow</Link>
+        </h3>
+        <Main />
         <Switch>
           <NormalRoute
             exact
@@ -154,3 +157,35 @@ class App extends React.Component {
 }
 
 export default App;
+
+const HelloContext = createContext();
+
+function Main() {
+  const hello = "world";
+  const user = "filipe";
+
+  return (
+    <HelloContext.Provider value={{ hello, user }}>
+      <Grandparent />
+    </HelloContext.Provider>
+  );
+}
+
+function Grandparent() {
+  const myContext = useContext(HelloContext);
+  return <Parent />;
+}
+
+function Parent() {
+  return <Child />;
+}
+
+function Child() {
+  return <Grandchild />;
+}
+
+function Grandchild() {
+  const myContext = useContext(HelloContext);
+  console.log("myContext:", myContext);
+  return <div>Hello {myContext.hello}</div>;
+}

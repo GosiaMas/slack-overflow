@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Question = (props) => {
-  console.log("props:", props);
+  // console.log("props:", props);
+  useEffect(() => {
+    console.log("THE CURRENT COUNTER CHANGED");
+  }, [props.counter]);
   return (
     <div
       style={{
